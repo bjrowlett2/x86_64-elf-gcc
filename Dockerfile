@@ -50,6 +50,7 @@ ARG TARGET
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PATH="/opt/${TARGET}/bin:$PATH"
+ENV LD_LIBRARY_PATH="/opt/${TARGET}/lib"
 
 RUN apt -y update \
     && apt --no-install-recommends -y install \
