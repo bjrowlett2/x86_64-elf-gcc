@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    tags: ["v*"]
+    branches: ["!*"]
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - id: checkout
+      name: Checkout
+      uses: actions/checkout@v2
+
+    - id: metadata-action
+      name: Metadata Action
+      uses: docker/metadata-action@v3
+      with:
+        images: bjrowlett2/x86_64-elf-gcc
+        tags: |
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+
+    - id: setup-buildx-action
+      name: Setup Buildx Action
+      uses: docker/setup-buildx-action@v1
+        
+    - id: login-action
+      name: Login Action
+      uses: docker/login-action@v1
+      with:
+        username: ${{secrets.DOCKERHUB_USERNAME}}
+        password: ${{secrets.DOCKERHUB_ACCESS_TOKEN}}
+    
+    - id: build-push-action
+      name: Build Push Action
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{steps.metadata-action.outputs.tags}}
+        labels: ${{steps.metadata-action.outputs.labels}}
+
+    - id: echo-digest-action
+      name: Echo Digest Action
+      run: echo ${{steps.build-push-action.outputs.digest}}
