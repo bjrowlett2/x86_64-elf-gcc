@@ -3,8 +3,8 @@ FROM ubuntu:20.04 as build
 
 ARG TARGET
 
-ARG GCC_VERSION="11.2.0"
-ARG BINUTILS_VERSION="2.37"
+ARG GCC_VERSION="12.1.0"
+ARG BINUTILS_VERSION="2.38"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -54,7 +54,7 @@ ENV LD_LIBRARY_PATH="/opt/${TARGET}/lib"
 
 RUN apt -y update \
     && apt --no-install-recommends -y install \
-        grub-common libgmp10 libisl22 libmpc3 libmpfr6 make nasm xorriso \
+        grub-pc-bin libgmp10 libisl22 libmpc3 libmpfr6 make nasm xorriso \
     && rm -rf -- /var/lib/apt/lists/*
 
 COPY --from=build "/opt/${TARGET}" "/opt/${TARGET}"
